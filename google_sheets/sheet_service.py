@@ -2,8 +2,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 # Path to the service account credentials JSON file
-# SERVICE_ACCOUNT_FILE = r'C:\Users\jeril\Desktop\superjoin_assgn\google_sheets\mysqlsheets-435615-fa7d6f85d058.json'
-SERVICE_ACCOUNT_FILE = r'C:\Users\jeril\Desktop\superjoin_assgn\google_sheets\mysqlsheets-435615-fa7d6f85d058.json'
+SERVICE_ACCOUNT_FILE = r'<enter path to service account key>.json'
 
 
 # Scopes required to access Google Sheets
