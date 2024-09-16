@@ -1,7 +1,4 @@
 
-
-https://github.com/user-attachments/assets/f178ab2b-c909-4a84-ab85-9ceb0a1bb2bd
-
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/AHFn7Vbn)
 # Superjoin Hiring Assignment
 
@@ -56,8 +53,6 @@ We have a checklist at the bottom of this README file, which you should update a
 - [ ] I added my very planned-out approach to the problem at the end of this README 📜
 
 ## Got Questions❓
-
-https://github.com/user-attachments/assets/a58b2635-8c5c-49f0-8944-e467b21b34d4
 
 
 Feel free to check the discussions tab, you might get some help there. Check out that tab before reaching out to us. Also, did you know, the internet is a great place to explore? 😛
