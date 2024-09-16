@@ -62,8 +62,10 @@ We're available at techhiring@superjoin.ai for all queries.
 All the best ✨.
 
 ## Developer's Section
-*Add your video here, and your approach to the
 
 https://github.com/user-attachments/assets/475527a6-4cca-4504-b544-89d40f441e28
 
- problem (optional). Leave some comments for us here if you want, we will be reading this :)*
+I wasn't able to add all test cases in the video as it had already crossed 120 seconds. 
+but i've explained my approach to some extent. I'm sorry.
+The code is in master branch.
+Thank you.
