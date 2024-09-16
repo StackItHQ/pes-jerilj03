@@ -52,6 +52,10 @@ We have a checklist at the bottom of this README file, which you should update a
 - [ ] I added my very planned-out approach to the problem at the end of this README 📜
 
 ## Got Questions❓
+
+https://github.com/user-attachments/assets/a58b2635-8c5c-49f0-8944-e467b21b34d4
+
+
 Feel free to check the discussions tab, you might get some help there. Check out that tab before reaching out to us. Also, did you know, the internet is a great place to explore? 😛
 
 We're available at techhiring@superjoin.ai for all queries. 
