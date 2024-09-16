@@ -3,34 +3,14 @@
 
 # # Google Sheets configuration
 # SHEET_ID = '12JOF2VyoMSAoVzIgNzXT2zzBoQpOyHR4bDKVGifSRZw'
-# RANGE_NAME = 'Sheet1!A:D'
-# SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # SERVICE_ACCOUNT_FILE = r'C:\Users\jeril\Desktop\superjoin_assgn\google_sheets\mysqlsheets-435615-fa7d6f85d058.json'
+# SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# # Create Google Sheets service
 # def get_sheets_service():
 #     credentials = service_account.Credentials.from_service_account_file(
 #         SERVICE_ACCOUNT_FILE, scopes=SCOPES
 #     )
 #     return build('sheets', 'v4', credentials=credentials).spreadsheets()
-
-# # Read data from Google Sheets
-# def read_sheet_data():
-#     sheet_service = get_sheets_service()
-#     result = sheet_service.values().get(spreadsheetId=SHEET_ID, range=RANGE_NAME).execute()
-#     values = result.get('values', [])
-    
-#     # Ensure each row has 4 columns
-#     formatted_data = []
-#     for row in values:
-#         if len(row) < 4:
-#             row.extend([''] * (4 - len(row)))
-#         formatted_data.append(tuple(row))
-    
-#     return formatted_data
-
-# Create or update rows in Google Sheets
-
 
 
 from googleapiclient.discovery import build
@@ -39,10 +19,28 @@ from google.oauth2 import service_account
 # Google Sheets configuration
 SHEET_ID = '12JOF2VyoMSAoVzIgNzXT2zzBoQpOyHR4bDKVGifSRZw'
 SERVICE_ACCOUNT_FILE = r'C:\Users\jeril\Desktop\superjoin_assgn\google_sheets\mysqlsheets-435615-fa7d6f85d058.json'
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SCOPES = [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive.metadata.readonly'  # Add Google Drive scope
+]
 
 def get_sheets_service():
     credentials = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES
     )
     return build('sheets', 'v4', credentials=credentials).spreadsheets()
+
+def get_drive_service():
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    )
+    return build('drive', 'v3', credentials=credentials)
+
+def get_last_modified_time(sheet_id):
+    drive_service = get_drive_service()
+    file_metadata = drive_service.files().get(fileId=sheet_id, fields="modifiedTime").execute()
+    return file_metadata['modifiedTime']
+
+if __name__ == "__main__":
+    last_modified_time = get_last_modified_time(SHEET_ID)
+    print(f"Last modified time of the Google Sheet: {last_modified_time}")

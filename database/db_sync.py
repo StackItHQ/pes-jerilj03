@@ -46,3 +46,32 @@ def update_db_data(data):
     finally:
         cursor.close()
         connection.close()
+
+
+def get_last_db_update_time():
+    """
+    Fetches the timestamp of the most recent update in the database.
+    Assumes there is a 'last_modified' or equivalent column in the database.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        # Assuming your table has a column called 'last_modified' to track updates
+        query = "SELECT MAX(last_modified) FROM test_table"  # Replace 'your_table_name' with the actual table name
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        # If the table is empty or no updates have been made, return the minimum date
+        if result[0] is None:
+            return datetime.datetime.min
+        
+        return result[0]  # The latest timestamp from the 'last_modified' column
+
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return datetime.datetime.min  # Return the minimum date on error
+
+    finally:
+        cursor.close()
+        connection.close()
