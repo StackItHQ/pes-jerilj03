@@ -1,40 +1,91 @@
-from database.db_service import read_db_rows
-from google_sheets.sheet_service import update_sheet_data, read_sheet_data, delete_sheet_rows
+import datetime
+from logger import log_info, log_error
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
 import datetime
 
-def sync_db_to_google_sheet():
-    # Fetch the latest data from both Google Sheets and the database
-    db_data = read_db_rows(datetime.datetime.min)  # Fetch all rows from the database
-    sheet_data = read_sheet_data()  # Fetch all rows from Google Sheets
-    
-    db_data_clean = {row[0]: row for row in db_data}  # Dictionary with col1 as the key
-    sheet_data_clean = {row[0]: row for row in sheet_data}  # Same for Google Sheets
-    
-    rows_to_insert_or_update = []
-    rows_to_delete = []
-    
-    # Compare the data to find rows to update or delete
-    for db_key, db_row in db_data_clean.items():
-        if db_key not in sheet_data_clean:
-            # This row exists in the database but not in Google Sheets (INSERT)
-            rows_to_insert_or_update.append(db_row)
-        elif db_row != sheet_data_clean[db_key]:
-            # This row exists in both, but values differ (UPDATE)
-            rows_to_insert_or_update.append(db_row)
-    
-    for sheet_key in sheet_data_clean:
-        if sheet_key not in db_data_clean:
-            # This row exists in Google Sheets but not in the database (DELETE)
-            rows_to_delete.append(sheet_data_clean[sheet_key])
 
-    # Insert or update rows in Google Sheets
-    if rows_to_insert_or_update:
-        update_sheet_data(rows_to_insert_or_update)
-        print(f"Inserted/Updated {len(rows_to_insert_or_update)} rows in Google Sheets.")
+
+# Google Sheets configuration
+SHEET_ID = '12JOF2VyoMSAoVzIgNzXT2zzBoQpOyHR4bDKVGifSRZw'
+RANGE_NAME = 'Sheet1!A:D'
+LAST_SYNC_CELL = 'Sheet1!E1'
+
+# def read_sheet_data(sheet_service):
+#     result = sheet_service.values().get(spreadsheetId=SHEET_ID, range=RANGE_NAME).execute()
+#     values = result.get('values', [])
     
-    # Delete rows from Google Sheets
-    if rows_to_delete:
-        delete_sheet_rows(rows_to_delete)
-        print(f"Deleted {len(rows_to_delete)} rows from Google Sheets.")
+#     # Ensure each row has 4 columns
+#     formatted_data = []
+#     for row in values:
+#         if len(row) < 4:
+#             row.extend([''] * (4 - len(row)))
+#         formatted_data.append(tuple(row))  # Convert each row to a tuple
+
+#     return formatted_data
+
+# def update_sheet_data(sheet_service, data):
+#     values = [list(row) for row in data]  # Convert tuples to lists
+#     body = {
+#         'values': values
+#     }
+#     result = sheet_service.values().update(
+#         spreadsheetId=SHEET_ID,
+#         range=RANGE_NAME,
+#         valueInputOption='RAW',
+#         body=body
+#     ).execute()
+#     log_info("%d cells updated in Google Sheets.", result.get('updatedCells'))
+
+import datetime
+from logger import log_info, log_error
+
+# Google Sheets configuration
+SHEET_ID = '12JOF2VyoMSAoVzIgNzXT2zzBoQpOyHR4bDKVGifSRZw'
+RANGE_NAME = 'Sheet1!A:D'
+LAST_SYNC_CELL = 'Sheet1!E1'
+
+def read_sheet_data(sheet_service):
+    result = sheet_service.values().get(spreadsheetId=SHEET_ID, range=RANGE_NAME).execute()
+    values = result.get('values', [])
     
-    print("Database and Google Sheets are now synced.")
+    # Ensure each row has 4 columns
+    formatted_data = []
+    for row in values:
+        if len(row) < 4:
+            row.extend([''] * (4 - len(row)))
+        formatted_data.append(tuple(row))  # Convert each row to a tuple
+
+    return formatted_data
+
+def update_sheet_data(sheet_service, data):
+    values = [list(row) for row in data]  # Convert tuples to lists
+    body = {
+        'values': values
+    }
+    result = sheet_service.values().update(
+        spreadsheetId=SHEET_ID,
+        range=RANGE_NAME,
+        valueInputOption='RAW',
+        body=body
+    ).execute()
+    log_info("%d cells updated in Google Sheets.", result.get('updatedCells'))
+
+def get_last_sync_time_from_sheet(sheet_service):
+    result = sheet_service.values().get(spreadsheetId=SHEET_ID, range=LAST_SYNC_CELL).execute()
+    last_sync_time_str = result.get('values', [[None]])[0][0]
+    if last_sync_time_str:
+        return datetime.datetime.strptime(last_sync_time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    else:
+        return datetime.datetime.min
+
+def update_last_sync_time_in_sheet(sheet_service, timestamp):
+    body = {
+        'values': [[timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')]]
+    }
+    sheet_service.values().update(
+        spreadsheetId=SHEET_ID,
+        range=LAST_SYNC_CELL,
+        valueInputOption='RAW',
+        body=body
+    ).execute()
